@@ -56,13 +56,31 @@ function! s:SonicPiSendBuffer()
   execute "silent w !" . g:sonicpi_command
 endfunction
 
+function! s:SonicPiStartServer()
+  if exists("g:sonic_pi_start_server_command")
+    execute "silent !" . g:sonic_pi_start_server_command
+  endif
+endfunction
+
+function! s:SonicPiStopServer()
+  if exists("g:sonic_pi_stop_server_command")
+    execute "silent !" . g:sonic_pi_stop_server_command
+  endif
+endfunction
+
 function! s:SonicPiStop()
-  execute "silent !" . g:sonicpi_command . " stop"
+  if exists("g:sonicpi_stop_command")
+    execute "silent !" . g:sonicpi_stop_command
+  else
+    execute "silent !" . g:sonicpi_command . " stop"
+  endif
 endfunction
 
 " Export public API
 command! -nargs=0 SonicPiSendBuffer call s:SonicPiSendBuffer()
 command! -nargs=0 SonicPiStop call s:SonicPiStop()
+command! -nargs=0 SonicPiStartServer call s:SonicPiStartServer()
+command! -nargs=0 SonicPiStopServer call s:SonicPiStopServer
 
 " Set keymaps in Normal mode
 function! s:load_keymaps()
