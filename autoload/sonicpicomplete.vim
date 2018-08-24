@@ -55,31 +55,31 @@ function! sonicpicomplete#GetContext(base)
 endfunction
 
 function! sonicpicomplete#Complete(findstart, base)
-     "findstart = 1 when we need to get the text length
-    if a:findstart
-        let line = getline('.')
-        let idx = col('.')
-        while idx > 0
-            let idx -= 1
-            let c = line[idx-1]
-            if c =~ '\v[a-z0-9_:]'
-                continue
-            elseif ! c =~ '\.'
-                idx = -1
-                break
-            else
-                break
-            endif
-        endwhile
+  "findstart = 1 when we need to get the text length
+  if a:findstart
+    let line = getline('.')
+    let idx = col('.')
+    while idx > 0
+      let idx -= 1
+      let c = line[idx-1]
+      if c =~ '\v[a-z0-9_:]'
+        continue
+      elseif ! c =~ '\.'
+        idx = -1
+        break
+      else
+        break
+      endif
+    endwhile
 
-        return idx
+    return idx
     "findstart = 0 when we need to return the list of completions
-    else
-      echom a:base
-        let g:sonicpicomplete_completions = []
-        call sonicpicomplete#GetContext(a:base)
-        return g:sonicpicomplete_completions
-    endif
+  else
+    echom a:base
+    let g:sonicpicomplete_completions = []
+    call sonicpicomplete#GetContext(a:base)
+    return g:sonicpicomplete_completions
+  endif
 endfunction
 function! s:DefRuby()
 ruby << RUBYEOF
@@ -87,7 +87,7 @@ class SonicPiWordlist
   attr_reader :directives, :synths, :fx, :samples, :context
 
   def initialize
-# From server/sonicpi/lib/sonicpi/spiderapi.rb
+    # From server/sonicpi/lib/sonicpi/spiderapi.rb
     @directives = []
     @directives += %w(at bools choose comment cue dec density dice factor?)
     @directives += %w(in_thread inc knit live_loop ndefine one_in print)
@@ -96,267 +96,170 @@ class SonicPiWordlist
     @directives += %w(use_bpm use_bpm_mul use_random_seed wait with_bpm)
     @directives += %w(with_bpm_mul with_random_seed with_tempo)
     @directives += %w(define defonce)
-# From server/sonicpi/lib/sonicpi/mods/sound.rb
-    @directives += %w(__freesound __freesound_path chord chord_degree)
-    @directives += %w(complex_sampler_args? control degree)
+    # From app/server/ruby/lib/sonicpi/lang/sound.rb
+    @directives += %w(all_sample_names buffer chord chord_degree chord_invert chord_names)
+    @directives += %w(complex_sampler_args? control)
+    @directives += %w(current_synth current_synth_defaults current_sample_defaults current_volume current_transpose current_cent_tuning current_octave current_debug current_arg_checks)
+    @directives += %w(degree)
     @directives += %w(fetch_or_cache_sample_path find_sample_with_path)
-    @directives += %w(free_job_bus hz_to_midi job_bus job_fx_group)
+    @directives += %w(free_job_bus fx_names hz_to_midi job_bus job_fx_group)
     @directives += %w(job_mixer job_proms_joiner job_synth_group)
     @directives += %w(job_synth_proms_add job_synth_proms_rm)
-    @directives += %w(join_thread_and_subthreads kill_fx_job_group)
-    @directives += %w(kill_job_group load_sample load_samples)
-    @directives += %w(load_synthdefs midi_to_hz)
+    @directives += %w(join_thread_and_subthreads kill kill_fx_job_group)
+    @directives += %w(kill_job_group live_audio load_sample load_sample_at_path load_samples)
+    @directives += %w(load_synthdefs midi_notes midi_to_hz)
     @directives += %w(normalise_and_resolve_synth_args normalise_args!)
-    @directives += %w(note note_info play play_chord play_pattern)
-    @directives += %w(play_pattern_timed recording_save)
-    @directives += %w(resolve_sample_symbol_path rest? sample)
-    @directives += %w(sample_buffer sample_duration sample_info)
-    @directives += %w(sample_loaded? sample_names scale)
-    @directives += %w(scale_time_args_to_bpm! set_control_delta!)
-    @directives += %w(set_current_synth set_mixer_hpf!)
-    @directives += %w(set_mixer_hpf_disable! set_mixer_lpf!)
-    @directives += %w(set_mixer_lpf_disable! set_sched_ahead_time!)
-    @directives += %w(set_volume! shutdown_job_mixer stop synth)
+    @directives += %w(note note_info note_range octs pitch_to_ratio play play_chord play_pattern)
+    @directives += %w(play_pattern_timed ratio_to_pitch reboot recording_delete recording_save)
+    @directives += %w(recording_start recording_stop reset_mixer! resolve_sample_symbol_path rest? ring sample)
+    @directives += %w(sample_buffer sample_duration sample_free sample_free_all sample_groups sample_info)
+    @directives += %w(sample_loaded? sample_names sample_paths scale scale_names)
+    @directives += %w(scale_time_args_to_bpm! scsynth_info set_audio_latency! set_cent_tuning! set_control_delta!)
+    @directives += %w(set_current_synth set_mixer_control! set_mixer_hpf!)
+    @directives += %w(set_mixer_hpf_disable! set_mixer_invert_stereo! set_mixer_lpf!)
+    @directives += %w(set_mixer_lpf_disable! set_mixer_mono_mode! set_mixer_standard_stereo! set_recording_bit_depth! set_sched_ahead_time!)
+    @directives += %w(set_volume! shutdown_job_mixer spread status stop synth synth_names)
     @directives += %w(trigger_chord trigger_fx trigger_inst)
     @directives += %w(trigger_sampler trigger_specific_sampler)
     @directives += %w(trigger_synth trigger_synth_with_resolved_args)
-    @directives += %w(use_arg_bpm_scaling use_arg_checks use_debug use_fx)
-    @directives += %w(use_merged_synth_defaults use_sample_bpm)
-    @directives += %w(use_sample_pack use_sample_pack_as use_synth)
-    @directives += %w(use_synth_defaults use_timing_warnings)
-    @directives += %w(use_transpose validate_if_necessary!)
-    @directives += %w(with_arg_bpm_scaling with_arg_checks with_debug)
-    @directives += %w(with_fx with_merged_synth_defaults with_sample_bpm)
-    @directives += %w(with_sample_pack with_sample_pack_as with_synth)
-    @directives += %w(with_synth_defaults with_timing_warnings with_transpose)
-    # New with 2.4
-    @directives += %w(spread)
-# Synths from server/sonicpi/lib/sonicpi/synthinfo.rb
+    @directives += %w(use_arg_bpm_scaling use_arg_checks use_cent_tuning use_debug use_external_synths)
+    @directives += %w(use_merged_sample_defaults use_merged_synth_defaults use_octave use_sample_bpm use_sample_defaults)
+    @directives += %w(use_synth)
+    @directives += %w(use_synth_defaults use_timing_guarantees use_timing_warnings)
+    @directives += %w(use_transpose use_tuning validate_if_necessary!)
+    @directives += %w(with_arg_bpm_scaling with_arg_checks with_cent_tuning with_debug)
+    @directives += %w(with_fx with_merged_sample_defaults with_merged_synth_defaults with_octave with_sample_bpm with_sample_defaults)
+    @directives += %w(with_synth)
+    @directives += %w(with_synth_defaults with_timing_guarantees with_timing_warnings with_transpose with_tuning)
+    # from app/server/ruby/lib/sonicpi/lang/midi.rb
+    @directives += %w(current_midi_defaults)
+    @directives += %w(midi midi_all_notes_off midi_cc midi_channel_pressure midi_clock_beat midi_clock_tick midi_continue midi_local_control_off midi_local_control_on midi_mode midi_note_off midi_note_on midi_pc midi_pitch_bend midi_poly_pressure midi_raw midi_reset midi_sound_off midi_start midi_stop)
+    @directives += %w(use_merged_midi_defaults use_midi_defaults use_midi_logging)
+    @directives += %w(with_merged_midi_defaults with_midi_defaults with_midi_logging)
+    # from app/server/ruby/lib/sonicpi/lang/pattern.rb
+    @directives += %w(play_nested_pattern)
+
+    @directives_context = {}
+    @directives_context["play"] = ['amp', 'amp_slide', 'pan', 'pan_slide', 'attack', 'decay', 'sustain', 'release', 'attack_level', 'decay_level', 'sustain_level', 'env_curve', 'slide', 'pitch', 'on']
+    @directives_context["live_audio"] = ['input', 'stereo', 'stop']
+    @directives_context["sample"] = ['rate', 'beat_stretch', 'pitch_stretch', 'attack', 'sustain', 'release', 'start', 'finish', 'pan', 'amp', 'pre_amp', 'onset', 'slice', 'num_slices', 'norm', 'lpf', 'lpf_init_level', 'lpf_attack_level', 'lpf_decay_level', 'lpf_sustain_level', 'lpf_release_level', 'lpf_attack', 'lpf_decay', 'lpf_sustain', 'lpf_release', 'lpf_min', 'lpf_env_curve', 'hpf', 'hpf_init_level', 'hpf_attack_level', 'hpf_decay_level', 'hpf_sustain_level', 'hpf_release_level', 'hpf_attack', 'hpf_decay', 'hpf_sustain', 'hpf_release', 'hpf_env_curve', 'hpf_max', 'rpitch', 'pitch', 'window_size', 'pitch_dis', 'time_dis', 'compress', 'threshold', 'slope_below', 'slope_above', 'clamp_time', 'relax_time', 'slide', 'path']
+    @directives_context[note_range] = ['pitches']
+
+     # The synths
     @synths = []
-    @synths += %w(:dull_bell :pretty_bell :beep :sine :saw :pulse)
-    @synths += %w(:square :tri :dsaw :fm :mod_fm :mod_saw :mod_dsaw)
-    @synths += %w(:mod_sine :mod_beep :mod_tri :mod_pulse :tb303)
-    @synths += %w(:supersaw :prophet :zawa :dark_ambience :growl)
-    @synths += %w(:hollow :noise :pnoise)
-    @synths += %w(:bnoise :gnoise :cnoise)
-    # dark_sea_horn and wood have been removed in 2.4 - come back soon!
-    #@synths += %w(:dark_sea_horn :wood)
-# FX from server/sonicpi/lib/sonicpi/synthinfo.rb
-    @fx = []
-    @fx += %w(:bitcrusher :reverb)
-    @fx += %w(:level :echo :slicer :wobble :ixi_techno)
-    @fx += %w(:compressor :rlpf :nrlpf :rhpf :nrhpf)
-    @fx += %w(:hpf :nhpf :lpf :nlpf :normaliser)
-    @fx += %w(:distortion :pan :bpf :nbpf :rbpf)
-    @fx += %w(:nrbpf :ring :flanger)
-# Samples from server/sonicpi/lib/sonicpi/synthinfo.rb
-    @samples = []
-    @samples += %w(:drum_heavy_kick :drum_tom_mid_soft :drum_tom_mid_hard)
-    @samples += %w(:drum_tom_lo_soft :drum_tom_lo_hard :drum_tom_hi_soft)
-    @samples += %w(:drum_tom_hi_hard :drum_splash_soft :drum_splash_hard)
-    @samples += %w(:drum_snare_soft :drum_snare_hard :drum_cymbal_soft)
-    @samples += %w(:drum_cymbal_hard :drum_cymbal_open :drum_cymbal_closed)
-    @samples += %w(:drum_cymbal_pedal :drum_bass_soft :drum_bass_hard)
-    @samples += %w(:elec_triangle :elec_snare :elec_lo_snare :elec_hi_snare)
-    @samples += %w(:elec_mid_snare :elec_cymbal :elec_soft_kick)
-    @samples += %w(:elec_filt_snare :elec_fuzz_tom :elec_chime :elec_bong)
-    @samples += %w(:elec_twang :elec_wood :elec_pop :elec_beep :elec_blip)
-    @samples += %w(:elec_blip2 :elec_ping :elec_bell :elec_flip :elec_tick)
-    @samples += %w(:elec_hollow_kick :elec_twip :elec_plip :elec_blup)
-    @samples += %w(:guit_harmonics :guit_e_fifths :guit_e_slide :guit_em9)
-    @samples += %w(:misc_burp :perc_bell :perc_snap :perc_snap2)
-    @samples += %w(:ambi_soft_buzz :ambi_swoosh :ambi_drone :ambi_glass_hum)
-    @samples += %w(:ambi_glass_rub :ambi_haunted_hum :ambi_piano)
-    @samples += %w(:ambi_lunar_land :ambi_dark_woosh :ambi_choir)
-    @samples += %w(:bass_hit_c :bass_hard_c :bass_thick_c :bass_drop_c)
-    @samples += %w(:bass_woodsy_c :bass_voxy_c :bass_voxy_hit_c :bass_dnb_f)
-    @samples += %w(:sn_dub :sn_dolf :sn_zome :bd_ada :bd_pure :bd_808)
-    @samples += %w(:bd_zum :bd_gas :bd_sone :bd_haus :bd_zome :bd_boom)
-    @samples += %w(:bd_klub :bd_fat :bd_tek :loop_industrial :loop_compus)
-    @samples += %w(:loop_amen :loop_amen_full :loop_garzul)
-    @samples += %w(:loop_mik)
-
-# Contexts in which we may want particular completions
     @context = {}
-    # Base contexts from which sound attributes are built
-    @context['base_sound'] = [
-      'amp', 'amp_slide', 'pan', 'pan_slide', 'attack', 'sustain', 'release'
-    ]
-    @context['base_pulse'] = [
-      'pulse_width', 'pulse_width_slide', 'pulse_width_slide_curve', 'pulse_width_slide_shape'
-    ]
-    @context['base_phase'] = [
-      'phase', 'phase_offset', 'phase_slide', 'phase_slide_curve', 'phase_slide_shape'
-    ]
-    @context['base_filter'] = [
-      'cutoff', 'cutoff_slide', 'cutoff_slide_curve', 'cutoff_slide_shape'
-    ]
-    @context['base_res'] = [
-      'res', 'res_slide', 'res_slide_curve', 'res_slide_shape'
-    ]
-    @context['base_detuned'] = [
-      'detune', 'detune_slide', 'detune_slide_curve', 'detune_slide_shape'
-    ]
-    @context['base_mix'] = [
-      'mix', 'mix_slide', 'mix_slide_curve', 'mix_slide_shape'
-    ]
-    @context['base_modulated'] = [
-      'mod_invert_wave', 
-      'mod_phase', 'mod_phase_offset', 'mod_phase_slide', 'mod_phase_slide_curve', 'mod_phase_slide_shape',
-      'mod_pulse_width', 'mod_pulse_width_slide', 'mod_pulse_width_slide_curve', 'mod_pulse_width_slide_shape',
-      'mod_range', 'mod_range_slide', 'mod_range_slide_curve', 'mod_range_slide_shape',
-      'mod_wave'
-    ]
-    @context['base_synth'] = @context['base_sound'] + [
-      'amp_slide_curve', 'amp_slide_shape',
-      'attack_level',
-      'decay',
-      'env_curve',
-      'note_slide_curve', 'note_slide_shape',
-      'pan_slide_curve', 'pan_slide_shape',
-      'sustain_level'
-    ]
-    @context['base_ambient'] = @context['base_synth'] + [
-      'freq_addition', 'ring_multiplier', 'reverb_time', 'room_size'
-    ]
-    @context['base_fx'] = @context['base_synth'] + [
-      'pre_amp', 'pre_amp_slide', 'pre_amp_slide_curve', 'pre_amp_slide_shape'
-    ]
+    context_common = [ 'amp', 'amp_slide', 'amp_slide_shape', 'amp_slide_curve', 'pan', 'pan_slide', 'pan_slide_shape', 'pan_slide_curve', 'attack', 'decay', 'sustain', 'release', 'attack_level', 'decay_level', 'sustain_level' ]
+    context_note = [ 'note', 'note_slide', 'note_slide_shape', 'note_slide_curve' ]
+    context_cutoff = [ 'cutoff', 'cutoff_slide', 'cutoff_slide_shape', 'cutoff_slide_curve' ]
+    context_cutoff_min = [ 'cutoff_min', 'cutoff_min_slide', 'cutoff_min_slide_shape', 'cutoff_min_slide_curve', 'cutoff_attack', 'cutoff_decay', 'cutoff_sustain', 'cutoff_release', 'cutoff_attack_level', 'cutoff_decay_level', 'cutoff_sustain_level' ]
+    context_pulse_width = [ 'pulse_width', 'pulse_width_slide', 'pulse_width_slide_shape', 'pulse_width_slide_curve' ]
+    context_sub_amp = [ 'sub_amp', 'sub_amp_slide', 'sub_amp_slide_shape', 'sub_amp_slide_curve' ]
+    context_sub_detune = [ 'sub_detune', 'sub_detune_slide', 'sub_detune_slide_shape', 'sub_detune_slide_curve' ]
+    context_detune = [ 'detune', 'detune_slide', 'detune_slide_shape', 'detune_slide_curve' ]
+    context_detune1 = [ 'detune1', 'detune1_slide', 'detune1_slide_shape', 'detune1_slide_curve', 'detune2', 'detune2_slide', 'detune2_slide_shape', 'detune2_slide_curve' ]
+    context_dpulse_width = [ 'dpulse_width', 'dpulse_width_slide', 'dpulse_width_slide_shape', 'dpulse_width_slide_curve' ]
+    context_divisor = [ 'divisor', 'divisor_slide', 'divisor_slide_shape', 'divisor_slide_curve' ]
+    context_depth = [ 'depth', 'depth_slide', 'depth_slide_shape', 'depth_slide_curve' ]
+    context_mod_phase = [ 'mod_phase', 'mod_phase_offset' ]
+    context_mod_phase_slide = [ 'mod_phase_slide', 'mod_phase_slide_shape', 'mod_phase_slide_curve' ]
+    context_mod_range_slide = [ 'mod_range_slide', 'mod_range_slide_shape', 'mod_range_slide_curve' ]
+    context_mod_pulse_width_slide = [ 'mod_pulse_width_slide', 'mod_pulse_width_slide_shape', 'mod_pulse_width_slide_curve' ]
+    context_res = [ 'res', 'res_slide', 'res_slide_shape', 'res_slide_curve' ]
+    context_phase = [ 'phase', 'phase_slide', 'phase_slide_shape', 'phase_slide_curve', 'phase_offset' ]
+    context_range = [ 'range', 'range_slide', 'range_slide_shape', 'range_slide_curve' ]
+    context_vibrato_rate = [ 'vibrato_rate', 'vibrato_rate_slide_shape', 'vibrato_rate_slide_curve' ]
+    context_vibrato_depth = [ 'vibrato_depth', 'vibrato_depth_slide_shape', 'vibrato_depth_slide_curve' ]
+    context_freq_band = [ 'freq_band', 'freq_band_slide', 'freq_band_slide_shape', 'freq_band_slide_curve' ]
+    @synths += [':beep']
+    @context['beep'] = context_common + context_note + [ 'env_curve' ]
+    @synths += [':blade']
+    @context['blade'] = context_common + context_note + context_cutoff + context_vibrato_rate + context_vibrato_depth + [ 'env_curve', 'vibrato_delay', 'vibrato_onset' ]
+    @synths += [':bnoise']
+    @context['bnoise'] = context_common + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':chipbass']
+    @context['chipbass'] = context_common + context_note + [ 'note_resolution', 'env_curve' ]
+    @synths += [':chiplead']
+    @context['chiplead'] = context_common + context_note + [ 'note_resolution', 'env_curve', 'width' ]
+    @synths += [':chipnoise']
+    @context['chipnoise'] = context_common + context_freq_band + [ 'env_curve' ]
+    @synths += [':cnoise']
+    @context['cnoise'] = context_common + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':dark_ambience']
+    @context['dark_ambience'] = context_common + context_note + context_cutoff + context_detune1 + context_res + [ 'env_curve', 'noise', 'ring', 'room', 'reverb_time' ]
+    @synths += [':dpulse']
+    @context['dpulse'] = context_common + context_note + context_cutoff + context_pulse_width + context_detune + context_dpulse_width + [ 'env_curve' ]
+    @synths += [':dsaw']
+    @context['dsaw'] = context_common + context_note + context_cutoff + context_detune + [ 'env_curve' ]
+    @synths += [':dtri']
+    @context['dtri'] = context_common + context_note + context_cutoff + context_detune + [ 'env_curve' ]
+    @synths += [':dull_bell']
+    @context['dull_bell'] = context_common + context_note + [ 'env_curve' ]
+    @synths += [':fm']
+    @context['fm'] = context_common + context_note + context_cutoff + context_divisor + context_depth + [ 'env_curve' ]
+    @synths += [':gnoise']
+    @context['gnoise'] = context_common + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':growl']
+    @context['growl'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':hollow']
+    @context['hollow'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve', 'noise', 'norm' ]
+    @synths += [':hoover']
+    @context['hoover'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':mod_beep']
+    @context['mod_beep'] = context_common + context_note + context_cutoff + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_dsaw']
+    @context['mod_dsaw'] = context_common + context_note + context_cutoff + context_detune + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_fm']
+    @context['mod_fm'] = context_common + context_note + context_cutoff + context_divisor + context_depth + context_mod_phase + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_pulse']
+    @context['mod_pulse'] = context_common + context_note + context_cutoff + context_pulse_width + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_saw']
+    @context['mod_saw'] = context_common + context_note + context_cutoff + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_sine']
+    @context['mod_sine'] = context_common + context_note + context_cutoff + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':mod_tri']
+    @context['mod_tri'] = context_common + context_note + context_cutoff + context_mod_phase + context_mod_phase_slide + context_mod_range_slide + context_mod_pulse_width_slide + [ 'env_curve', 'mod_range', 'mod_pulse_width', 'mod_invert_wave', 'mod_wave' ]
+    @synths += [':noise']
+    @context['noise'] = context_common + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':piano']
+    @context['piano'] = context_common + context_note + [ 'vel', 'hard', 'stereo_width' ]
+    @synths += [':pluck']
+    @context['pluck'] = context_common + context_note + [ 'noise_amp', 'max_delay_time', 'pluck_decay', 'coef' ]
+    @synths += [':pnoise']
+    @context['pnoise'] = context_common + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':pretty_bell']
+    @context['pretty_bell'] = context_common + context_note + [ 'env_curve' ]
+    @synths += [':prophet']
+    @context['prophet'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':pulse']
+    @context['pulse'] = context_common + context_note + context_cutoff + context_pulse_width + [ 'env_curve' ]
+    @synths += [':saw']
+    @context['saw'] = context_common + context_note + [ 'env_curve' ]
+    @synths += [':sine']
+    @context['sine'] = context_common + context_note + [ 'env_curve' ]
+    @synths += [':sound_in']
+    @context['sound_in'] = context_common + [ 'env_curve', 'input' ]
+    @synths += [':sound_in_stereo']
+    @context['sound_in_stereo'] = context_common + [ 'env_curve', 'input' ]
+    @synths += [':square']
+    @context['square'] = context_common + context_note + context_cutoff + [ 'env_curve' ]
+    @synths += [':subpulse']
+    @context['subpulse'] = context_common + context_note + context_cutoff + context_pulse_width + context_sub_amp + context_sub_detune + [ 'env_curve' ]
+    @synths += [':supersaw']
+    @context['supersaw'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':tb303']
+    @context['tb303'] = context_common + context_note + context_cutoff + context_cutoff_min + context_pulse_width + context_res + [ 'env_curve', 'wave' ]
+    @synths += [':tech_saws']
+    @context['tech_saws'] = context_common + context_note + context_cutoff + context_res + [ 'env_curve' ]
+    @synths += [':tri']
+    @context['tri'] = context_common + context_note + context_cutoff + context_pulse_width + [ 'env_curve' ]
+    @synths += [':zawa']
+    @context['zawa'] = context_common + context_note + context_cutoff + context_pulse_width + context_res + context_phase + context_range + [ 'wave', 'invert_wave', 'disable_wave' ]
 
-    # Synths - grouped by related base function
-    @context['dull_bell'] = @context['base_synth']
-    @context['pretty_bell'] = @context['dull_bell']
+    # The samples
+    @samples = [ ':drum_heavy_kick', ':drum_tom_mid_soft', ':drum_tom_mid_hard', ':drum_tom_lo_soft', ':drum_tom_lo_hard', ':drum_tom_hi_soft', ':drum_tom_hi_hard', ':drum_splash_soft', ':drum_splash_hard', ':drum_snare_soft', ':drum_snare_hard', ':drum_cymbal_soft', ':drum_cymbal_hard', ':drum_cymbal_open', ':drum_cymbal_closed', ':drum_cymbal_pedal', ':drum_bass_soft', ':drum_bass_hard', ':drum_cowbell', ':drum_roll', ':elec_triangle', ':elec_snare', ':elec_lo_snare', ':elec_hi_snare', ':elec_mid_snare', ':elec_cymbal', ':elec_soft_kick', ':elec_filt_snare', ':elec_fuzz_tom', ':elec_chime', ':elec_bong', ':elec_twang', ':elec_wood', ':elec_pop', ':elec_beep', ':elec_blip', ':elec_blip2', ':elec_ping', ':elec_bell', ':elec_flip', ':elec_tick', ':elec_hollow_kick', ':elec_twip', ':elec_plip', ':elec_blup', ':guit_harmonics', ':guit_e_fifths', ':guit_e_slide', ':guit_em9', ':misc_burp', ':misc_crow', ':misc_cineboom', ':perc_bell', ':perc_bell2', ':perc_snap', ':perc_snap2', ':perc_swash', ':perc_till', ':perc_door', ':perc_impact1', ':perc_impact2', ':perc_swoosh', ':ambi_soft_buzz', ':ambi_swoosh', ':ambi_drone', ':ambi_glass_hum', ':ambi_glass_rub', ':ambi_haunted_hum', ':ambi_piano', ':ambi_lunar_land', ':ambi_dark_woosh', ':ambi_choir', ':ambi_sauna', ':bass_hit_c', ':bass_hard_c', ':bass_thick_c', ':bass_drop_c', ':bass_woodsy_c', ':bass_voxy_c', ':bass_voxy_hit_c', ':bass_dnb_f', ':sn_dub', ':sn_dolf', ':sn_zome', ':sn_generic', ':bd_ada', ':bd_pure', ':bd_808', ':bd_zum', ':bd_gas', ':bd_sone', ':bd_haus', ':bd_zome', ':bd_boom', ':bd_klub', ':bd_fat', ':bd_tek', ':bd_mehackit', ':loop_industrial', ':loop_compus', ':loop_amen', ':loop_amen_full', ':loop_garzul', ':loop_mika', ':loop_breakbeat', ':loop_safari', ':loop_tabla', ':loop_3d_printer', ':loop_drone_g_97', ':loop_electric', ':loop_mehackit1', ':loop_mehackit2', ':loop_perc1', ':loop_perc2', ':loop_weirdo', ':tabla_tas1', ':tabla_tas2', ':tabla_tas3', ':tabla_ke1', ':tabla_ke2', ':tabla_ke3', ':tabla_na', ':tabla_na_o', ':tabla_tun1', ':tabla_tun2', ':tabla_tun3', ':tabla_te1', ':tabla_te2', ':tabla_te_ne', ':tabla_te_m', ':tabla_ghe1', ':tabla_ghe2', ':tabla_ghe3', ':tabla_ghe4', ':tabla_ghe5', ':tabla_ghe6', ':tabla_ghe7', ':tabla_ghe8', ':tabla_dhec', ':tabla_na_s', ':tabla_re', ':glitch_bass_g', ':glitch_perc1', ':glitch_perc2', ':glitch_perc3', ':glitch_perc4', ':glitch_perc5', ':glitch_robot1', ':glitch_robot2', ':vinyl_backspin', ':vinyl_rewind', ':vinyl_scratch', ':vinyl_hiss', ':mehackit_phone1', ':mehackit_phone2', ':mehackit_phone3', ':mehackit_phone4', ':mehackit_robot1', ':mehackit_robot2', ':mehackit_robot3', ':mehackit_robot4', ':mehackit_robot5', ':mehackit_robot6', ':mehackit_robot7' ]
 
-    @context['beep'] = @context['base_synth']
-    @context['saw'] = @context['beep']
-    @context['supersaw'] = @context['saw'] + @context['base_filter'] + @context['base_res']
-    @context['mod_saw'] = @context['saw'] + @context['base_filter'] + @context['base_modulated']
-    @context['mod_sine'] = @context['base_synth'] + @context['base_filter'] + @context['base_modulated']
-
-    @context['square'] = @context['base_synth'] + @context['base_filter']
-    @context['pulse'] = @context['square'] + @context['base_pulse']
-    @context['mod_pulse'] = @context['pulse'] + @context['base_modulated']
-    @context['tri'] = @context['pulse']
-    @context['mod_tri'] = @context['tri'] + @context['base_modulated']
-
-    @context['dsaw'] = @context['base_synth'] + @context['base_filter'] + @context['base_detuned']
-    @context['mod_dsaw'] = @context['dsaw'] + @context['base_modulated']
-
-    @context['fm'] = @context['base_synth'] + [
-      'divisor', 'divisor_slide', 'divisor_curve', 'divisor_shape',
-      'depth', 'depth_slide', 'depth_slide_curve', 'depth_slide_shape'
-    ]
-    @context['mod_fm'] = @context['fm'] + @context['base_modulated']
-
-    @context['noise'] = @context['base_synth'] + @context['base_filter'] + @context['base_res']
-    @context['gnoise'] = @context['noise']
-    @context['bnoise'] = @context['noise']
-    @context['pnoise'] = @context['noise']
-    @context['cnoise'] = @context['noise']
-
-    @context['growl'] = @context['base_synth']
-    @context['dark_ambience'] = @context['base_synth'] + [
-      'freq_addition', 'room_size', 'reverb_time', 'ring_multipler' #(sic)
-    ]
-    # dark_sea_horn has been removed in 2.4 - come back soon!
-    #@context['dark_sea_horn'] = @context['base_synth']
-    @context['hollow'] = @context['base_synth']
-    # wood has been removed in 2.4...
-    #@context['wood'] = @context['base_synth']
-    @context['prophet'] = @context['base_synth'] + @context['base_filter'] + @context['base_res']
-    @context['tb303'] = @context['base_synth'] + @context['base_filter'] + @context['base_pulse'] + @context['base_res']
-    @context['zawa'] = @context['base_synth'] + @context['base_pulse'] + @context['base_phase'] + @context['base_modulated']
-
-    @context['sample'] = @context['base_synth'] + @context['base_filter'] + @context['base_res'] + [
-      'finish', 'rate', 'start', 'norm'
-    ]
-    # FX
-    @context['reverb'] = @context['base_fx'] + @context['base_mix'] + [
-      'room', 'room_slide', 'room_slide_curve', 'room_slide_shape',
-      'damp', 'damp_slide', 'damp_slide_curve', 'damp_slide_shape'
-    ]
-    @context['bitcrusher'] = @context['base_fx'] + @context['base_mix'] + [
-      'sample_rate', 'sample_rate_slide', 'sample_rate_slide_curve', 'sample_rate_slide_shape',
-      'bits', 'bits_slide', 'bits_slide_curve', 'bits_slide_shape'
-    ]
-    @context['level'] = @context['base_fx'] + [
-      'amp', 'amp_slide', 'amp_slide_curve', 'amp_slide_shape'
-    ]
-    @context['echo'] = @context['level'] + @context['base_phase'] + @context['base_mix'] + [
-      'pre_amp', 'pre_amp_slide', 'pre_amp_slide_curve', 'pre_amp_slide_shape',
-      'decay', 'decay_slide', 'decay_slide_curve', 'decay_slide_shape'
-    ]
-    @context['chorus'] = @context['echo']
-    @context['flanger'] = @context['echo'] + [
-      'delay', 'delay_slide', 'delay_slide_curve', 'delay_slide_shape',
-      'depth', 'depth_slide', 'depth_slide_curve', 'depth_slide_shape',
-      'feedback', 'feedback_slide', 'feedback_slide_curve', 'feedback_slide_shape',
-      'max_delay', 'stereo_invert_wave', 'invert_flange'
-    ]
-
-    @context['slicer'] = @context['level'] + @context['base_pulse'] + @context['base_phase'] + [
-      'amp_min', 'amp_min_slide', 'amp_min_slide_curve', 'amp_min_slide_shape',
-      'amp_max', 'amp_max_slide', 'amp_max_slide_curve', 'amp_max_slide_shape'
-    ]
-
-    @context['ixi_techno'] = @context['level'] + @context['base_mix'] + 
-        @context['base_phase'] + @context['base_res'] + [
-          'cutoff_min', 'cutoff_min_slide', 'cutoff_min_slide_curve', 'cutoff_min_slide_shape',
-          'cutoff_max', 'cutoff_max_slide', 'cutoff_max_slide_curve', 'cutoff_max_slide_shape'
-        ]
-    @context['wobble'] = @context['ixi_techno'] + @context['base_pulse']
-
-    @context['compressor'] = @context['level'] + [
-      'threshold', 'threshold_slide', 'threshold_slide_curve', 'threshold_slide_shape',
-      'clamp_time', 'clamp_time_slide', 'clamp_time_slide_curve', 'clamp_time_slide_shape',
-      'slope_above', 'slope_above_slide', 'slope_above_slide_curve', 'slope_above_slide_shape',
-      'slope_below', 'slope_below_slide', 'slope_below_slide_curve', 'slope_below_slide_shape',
-      'relax_time', 'relax_time_slide', 'relax_time_slide_curve', 'relax_time_slide_shape'
-    ]
-
-    @context['octaver'] = @context['level'] + [
-      'oct1_amp', 'oct1_amp_slide', 'oct1_amp_slide_curve', 'oct1_amp_slide_shape',
-      'oct1_interval', 'oct1_interval_slide', 'oct1_interval_slide_curve', 'oct1_interval_slide_shape',
-      'oct2_amp', 'oct2_amp_slide', 'oct2_amp_slide_curve', 'oct2_amp_slide_shape',
-      'oct3_amp', 'oct3_amp_slide', 'oct3_amp_slide_curve', 'oct3_amp_slide_shape'
-    ]
-
-    @context['ring_mod'] = @context['level'] + [
-      'freq', 'freq_slide', 'freq_slide_curve', 'freq_slide_shape',
-      'mod_amp', 'mod_amp_slide', 'mod_amp_slide_curve', 'mod_amp_slide_shape'
-    ]
-
-    @context['bpf'] = @context['level'] + @context['base_res'] + [
-      'centre', 'centre_slide', 'centre_slide_curve', 'centre_slide_shape'
-    ]
-    @context['rbpf'] = @context['bpf']
-    @context['nbpf'] = @context['bpf']
-    @context['nrbpf'] = @context['bpf']
-
-    @context['lpf'] = @context['level'] + @context['base_filter'] + @context['base_res'] + @context['base_mix']
-    @context['rlpf'] = @context['lpf']
-    @context['nlpf'] = @context['lpf']
-    @context['nrlpf'] = @context['lpf']
-    @context['hpf'] = @context['lpf']
-    @context['nhpf'] = @context['lpf']
-    @context['rhpf'] = @context['lpf']
-    @context['nrhpf'] = @context['lpf']
-
-    @context['normaliser'] = @context['level'] + [
-      'level', 'level_slide', 'level_slide_curve', 'level_slide_curve_shape'
-    ]
-
-    @context['distortion'] = @context['level'] + [
-      'distort', 'distort_slide', 'distort_slide_curve', 'distort_slide_shape'
-    ]
-
-    @context['pan'] = @context['level'] + [
-      'pan', 'pan_slide', 'pan_slide_curve', 'pan_slide_shape'
-    ]
-
-    # Oddball helpers
-    @context['spread'] = [ 'rotate' ]
-
+    # The FX
+    @fx = [ ':bitcrusher', ':krush', ':reverb', ':gverb', ':level', ':mono', ':echo', ':slicer', ':panslicer', ':wobble', ':ixi_techno', ':compressor', ':whammy', ':rlpf', ':nrlpf', ':rhpf', ':nrhpf', ':hpf', ':nhpf', ':lpf', ':nlpf', ':normaliser', ':distortion', ':pan', ':bpf', ':nbpf', ':rbpf', ':nrbpf', ':band_eq', ':tanh', ':pitch_shift', ':ring_mod', ':octaver', ':vowel', ':flanger', ':eq', ':tremolo', ':record', ':sound_out', ':sound_out_stereo' ]
   end
 
   def return_to_vim(completions)
